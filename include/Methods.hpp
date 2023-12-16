@@ -23,15 +23,15 @@
 
 
 
-#define MAXF 9000000
+#define MAXF 9000000 //@avoid cpp macro. You could have used a constexpr variable
 namespace methods {
 
-    typedef struct {
+    typedef struct { // @note this is a C struct, not a C++ struct!!
         size_t point;
         double value;
     } ParallelStruct;
 
-    struct EikonalHeapComparator {
+    struct EikonalHeapComparator { //@note The same as above
         std::vector<double> &U;
 
         explicit EikonalHeapComparator(std::vector<double> &U) : U(U) {}
@@ -48,6 +48,7 @@ namespace methods {
                     const Mesh<DIM, MESH_SIZE> &data) {
 
         typedef typename Eikonal_traits<DIM>::Point Point;
+        //@note using Point=typename Eikonal_traits<DIM>::Point; would have been more modern C++
         for (auto &point: X) {
             if (point >= data.index.size()) {
                 printf("error on initial point: %f %f does not belong to mesh\n", data.points[point].x(),
@@ -64,7 +65,7 @@ namespace methods {
         }
         for (const auto &i: X) {
             U[i] = 0;
-            minHeap.push(i);
+            minHeap.push(i); 
         }
 
         int step_count = data.index.size() / 50;
@@ -117,7 +118,9 @@ namespace methods {
                         }
                     }
                     typename Eikonal::Eikonal_traits<DIM>::MMatrix M;
+                    // @note You should have used a class with M as a member
                     if constexpr (DIM == 2)
+                    // @note it is ok but you have Eigen::Matrix2d::Identity()
                         M << 1.0, 0.0,
                                 0.0, 1.;
                     else if constexpr (DIM == 3)
@@ -125,6 +128,7 @@ namespace methods {
                                 0.0, 1.0, 0.0,
                                 0.0, 0.0, 1.0;
                     Eikonal::SimplexData<DIM, MESH_SIZE> simplex{base, M};
+                    // @note Nice the ideo of moving the simplex.
                     Eikonal::solveEikonalLocalProblem<DIM, MESH_SIZE> solver{std::move(simplex),
                                                                              values};
 
@@ -132,7 +136,7 @@ namespace methods {
                     //if no descent direction or no convergence kill the process
                     if (sol.status != 0) {
                         printf("error on convergence\n");
-
+                        // @note In a more production code you'd better throw an exception
                         return false;
                         // continue;
                     }
