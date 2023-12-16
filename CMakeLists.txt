@@ -1,9 +1,10 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.22)
 project(eikonal_test)
 
 set(CMAKE_CXX_STANDARD 23)
 include_directories("include")
 include_directories("LocalProblem/include")
+include_directories("/usr/local/include/eigen3")
 file(GLOB SOURCES "LocalProblem/*.cpp")
 file(GLOB INNCLUDESLP "LocalProblem/include/*.hpp")
 file(GLOB UTILSOURCES "utils/*.cpp")
